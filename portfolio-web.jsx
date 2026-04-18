@@ -363,7 +363,7 @@ function Contact() {
       <p style={styles.sectionLabel}>Get in touch</p>
       <h2 style={styles.sectionTitle}>Contact</h2>
       <p style={{ ...styles.aboutText, marginBottom: "1.5rem" }}>
-        I'm actively looking for full-time roles or internships in web development or AI/ML. Feel free to reach out!
+        I'm actively looking for full-time roles in AI/ML. Feel free to reach out!
       </p>
       <div style={styles.contactGrid}>
         {contacts.map((c) => (
