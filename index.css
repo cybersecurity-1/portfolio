@@ -1,13 +1,28 @@
+* {
+  box-sizing: border-box;
+}
+
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'DM Sans', 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 }
 
 body {
   margin: 0;
-  display: flex;
-  flex-direction: column;
   min-width: 320px;
   min-height: 100vh;
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Responsive Utilities */
+@media (max-width: 768px) {
+  .section-padding {
+    padding: 2rem 1.5rem !important;
+  }
 }

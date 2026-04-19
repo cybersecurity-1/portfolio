@@ -68,6 +68,7 @@ const styles = {
     justifyContent: "space-between",
     padding: "0 2rem",
     height: 60,
+    transition: "all 0.3s ease",
   },
   navBrand: { fontSize: 16, fontWeight: 700, color: "#1a1a2e", letterSpacing: "-0.02em" },
   navLinks: { display: "flex", gap: 28 },
@@ -79,6 +80,29 @@ const styles = {
     fontWeight: 500,
     transition: "color 0.2s",
   },
+  menuButton: {
+    display: "none",
+    background: "none",
+    border: "none",
+    cursor: "pointer",
+    padding: 8,
+    color: "#1a1a2e",
+  },
+  mobileMenu: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100vh",
+    background: "#fff",
+    zIndex: 1000,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 32,
+    transition: "transform 0.3s ease-in-out",
+  },
 
   // Hero
   hero: {
@@ -88,7 +112,7 @@ const styles = {
     textAlign: "center",
   },
   heroName: { fontSize: 36, fontWeight: 800, letterSpacing: "-0.04em", marginBottom: 10 },
-  heroRole: { fontSize: 16, color: "#555", marginBottom: 6 },
+  heroRole: { fontSize: 16, color: "#555", marginBottom: 12, display: "block" },
   heroBadge: {
     display: "inline-block",
     fontSize: 12,
@@ -121,7 +145,7 @@ const styles = {
     fontWeight: 600,
     cursor: "pointer",
   },
-  heroLinks: { display: "flex", gap: 20, justifyContent: "center" },
+  heroLinks: { display: "flex", gap: 20, justifyContent: "center", flexWrap: "wrap" },
   heroLinkItem: { fontSize: 13, color: "#888" },
 
   // Section
@@ -135,7 +159,7 @@ const styles = {
     marginBottom: 8,
   },
   sectionTitle: { fontSize: 24, fontWeight: 800, letterSpacing: "-0.03em", marginBottom: "1.75rem" },
-  divider: { borderTop: "1px solid #e4e6f0", margin: "0 2rem" },
+  divider: { borderTop: "1px solid #e4e6f0", margin: "0 1.5rem" },
 
   // About
   aboutText: { fontSize: 15, color: "#444", lineHeight: 1.8, maxWidth: 600 },
@@ -143,7 +167,7 @@ const styles = {
   // Skills
   skillsGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+    gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
     gap: 14,
   },
   skillCard: {
@@ -159,7 +183,7 @@ const styles = {
   // Projects
   projectsGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
     gap: 16,
   },
   projectCard: {
@@ -196,7 +220,7 @@ const styles = {
   eduCgpa: { fontSize: 13, color: "#888", textAlign: "right" },
 
   // Contact
-  contactGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 14 },
+  contactGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 14 },
   contactCard: {
     background: "#fff",
     border: "1px solid #e4e6f0",
@@ -207,7 +231,7 @@ const styles = {
     gap: 4,
   },
   contactType: { fontSize: 11, fontWeight: 700, color: "#888", textTransform: "uppercase", letterSpacing: "0.08em" },
-  contactVal: { fontSize: 13, fontWeight: 600, color: "#1a6cf6" },
+  contactVal: { fontSize: 13, fontWeight: 600, color: "#1a6cf6", wordBreak: "break-all" },
 
   // Footer
   footer: {
@@ -222,27 +246,102 @@ const styles = {
 
 // ─── COMPONENTS ──────────────────────────────────────────────────────────────
 
+// ─── HOOKS ──────────────────────────────────────────────────────────────────
+function useMediaQuery(query) {
+  const [matches, setMatches] = useState(false);
+  useEffect(() => {
+    const media = window.matchMedia(query);
+    if (media.matches !== matches) setMatches(media.matches);
+    const listener = () => setMatches(media.matches);
+    media.addEventListener("change", listener);
+    return () => media.removeEventListener("change", listener);
+  }, [matches, query]);
+  return matches;
+}
+
+// ─── COMPONENTS ──────────────────────────────────────────────────────────────
+
 function Navbar() {
-  const scroll = (id) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  const [isOpen, setIsOpen] = useState(false);
+  const isMobile = useMediaQuery("(max-width: 768px)");
+  const scroll = (id) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    setIsOpen(false);
+  };
+
+  const toggleMenu = () => setIsOpen(!isOpen);
+
   return (
-    <nav style={styles.nav}>
-      <span style={styles.navBrand}></span>
-      <div style={styles.navLinks}>
-        {NAV_LINKS.map((l) => (
-          <span key={l} style={styles.navLink} onClick={() => scroll(l.toLowerCase())}>
-            {l}
-          </span>
-        ))}
-      </div>
-    </nav>
+    <>
+      <nav style={{ ...styles.nav, padding: isMobile ? "0 1.5rem" : "0 2rem" }}>
+        <span style={styles.navBrand}>MOHAMMED FAHAD</span>
+        
+        {isMobile ? (
+          <button style={{ ...styles.menuButton, display: "block" }} onClick={toggleMenu} aria-label="Toggle menu">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              {isOpen ? <path d="M18 6L6 18M6 6l12 12" /> : <path d="M3 12h18M3 6h18M3 18h18" />}
+            </svg>
+          </button>
+        ) : (
+          <div style={styles.navLinks}>
+            {NAV_LINKS.map((l) => (
+              <span key={l} style={styles.navLink} onClick={() => scroll(l.toLowerCase())}>
+                {l}
+              </span>
+            ))}
+          </div>
+        )}
+      </nav>
+
+      {/* Mobile Menu Overlay */}
+      {isMobile && (
+        <div 
+          style={{ 
+            ...styles.mobileMenu, 
+            transform: isOpen ? "translateY(0)" : "translateY(-100%)",
+            opacity: isOpen ? 1 : 0,
+            pointerEvents: isOpen ? "auto" : "none"
+          }}
+        >
+          {NAV_LINKS.map((l) => (
+            <span 
+              key={l} 
+              style={{ ...styles.navLink, fontSize: 18, fontWeight: 600 }} 
+              onClick={() => scroll(l.toLowerCase())}
+            >
+              {l}
+            </span>
+          ))}
+          <button 
+            style={{ 
+              position: "absolute", 
+              top: 20, 
+              right: 20, 
+              background: "none", 
+              border: "none", 
+              fontSize: 24, 
+              cursor: "pointer" 
+            }}
+            onClick={toggleMenu}
+          >
+            ×
+          </button>
+        </div>
+      )}
+    </>
   );
 }
 
 function Hero() {
+  const isSmall = useMediaQuery("(max-width: 480px)");
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
   return (
-    <section style={styles.hero}>
-      <h1 style={styles.heroName}>MOHAMMED FAHAD T H </h1>
-      <p style={styles.heroRole}>AI Engineer &nbsp;·&nbsp; Full Stack Developer &nbsp;·&nbsp; AI / ML Enthusiast</p>
+    <section style={{ ...styles.hero, padding: isMobile ? "4rem 1.5rem 3rem" : styles.hero.padding }}>
+      <h1 style={{ ...styles.heroName, fontSize: isSmall ? 28 : (isMobile ? 32 : 36) }}>MOHAMMED FAHAD T H </h1>
+      <p style={styles.heroRole}>
+        AI Engineer {isSmall ? <br/> : "·"} Full Stack Developer {isSmall ? <br/> : "·"} AI / ML Enthusiast
+      </p>
       <span style={styles.heroBadge}>Open to work — Fresher 2026</span>
       <div style={styles.heroButtons}>
         <button style={styles.btnPrimary} onClick={() => document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })}>
@@ -257,8 +356,8 @@ function Hero() {
         </a>
       </div>
       <div style={styles.heroLinks}>
-        <span style={styles.heroLinkItem}>https://github.com/cybersecurity-1</span>
-        <span style={styles.heroLinkItem}>https://www.linkedin.com/in/mohammed-fahad07/</span>
+        <span style={styles.heroLinkItem}>github.com/cybersecurity-1</span>
+        <span style={styles.heroLinkItem}>linkedin.com/in/mohammed-fahad07/</span>
         <span style={styles.heroLinkItem}>fahad01freelance@gmail.com</span>
       </div>
     </section>
@@ -266,15 +365,15 @@ function Hero() {
 }
 
 function About() {
+  const isMobile = useMediaQuery("(max-width: 768px)");
   return (
-    <section id="about" style={styles.section}>
+    <section id="about" style={{ ...styles.section, padding: isMobile ? "3rem 1.5rem" : styles.section.padding }}>
       <p style={styles.sectionLabel}>About me</p>
       <h2 style={styles.sectionTitle}>Who I am</h2>
       <p style={styles.aboutText}>
-        Hello, I'm Mohammed Fahad T H
+        Hello, I'm Mohammed Fahad T H. 
         I'm a BSc Computer Science graduate from VLBJ College of Arts and Science, Coimbatore, passionate about building intelligent systems that solve real-world problems.
         My journey into AI began with web development using Python and Django, but I found my true calling in Generative AI and Agentic Systems. I'm now focused on creating production-ready AI applications that leverage RAG architectures, LangChain, and LangGraph.
-        Currently seeking opportunities as a GenAI/Agentic AI Engineer where I can contribute to innovative AI solutions while continuously learning and growing.
       </p>
       <p style={{ ...styles.aboutText, marginTop: 14 }}>
         I'm actively looking for roles where I can contribute, learn fast, and grow as an engineer.
@@ -285,8 +384,9 @@ function About() {
 }
 
 function Skills() {
+  const isMobile = useMediaQuery("(max-width: 768px)");
   return (
-    <section id="skills" style={styles.section}>
+    <section id="skills" style={{ ...styles.section, padding: isMobile ? "3rem 1.5rem" : styles.section.padding }}>
       <p style={styles.sectionLabel}>What I know</p>
       <h2 style={styles.sectionTitle}>Skills</h2>
       <div style={styles.skillsGrid}>
@@ -308,8 +408,9 @@ function Skills() {
 }
 
 function Projects() {
+  const isMobile = useMediaQuery("(max-width: 768px)");
   return (
-    <section id="projects" style={styles.section}>
+    <section id="projects" style={{ ...styles.section, padding: isMobile ? "3rem 1.5rem" : styles.section.padding }}>
       <p style={styles.sectionLabel}>What I built</p>
       <h2 style={styles.sectionTitle}>Projects</h2>
       <div style={styles.projectsGrid}>
@@ -335,8 +436,9 @@ function Projects() {
 }
 
 function Education() {
+  const isMobile = useMediaQuery("(max-width: 768px)");
   return (
-    <section id="education" style={styles.section}>
+    <section id="education" style={{ ...styles.section, padding: isMobile ? "3rem 1.5rem" : styles.section.padding }}>
       <p style={styles.sectionLabel}>Background</p>
       <h2 style={styles.sectionTitle}>Education</h2>
       <div style={styles.eduCard}>
@@ -344,7 +446,7 @@ function Education() {
           <p style={styles.eduDegree}>BSc — Computer Science</p>
           <p style={styles.eduCollege}>VLB Janakiammal College of Arts and Science, Coimbatore</p>
         </div>
-        <div style={{ textAlign: "right" }}>
+        <div style={{ textAlign: isMobile ? "left" : "right", width: isMobile ? "100%" : "auto" }}>
           <p style={styles.eduYear}>2025</p>
         </div>
       </div>
@@ -353,13 +455,14 @@ function Education() {
 }
 
 function Contact() {
+  const isMobile = useMediaQuery("(max-width: 768px)");
   const contacts = [
     { type: "Email", val: "fahad01freelance@gmail.com", href: "mailto:fahad01freelance@gmail.com" },
     { type: "GitHub", val: "github.com/cybersecurity-1", href: "https://github.com/cybersecurity-1" },
     { type: "LinkedIn", val: "linkedin.com/in/mohammed-fahad07", href: "https://www.linkedin.com/in/mohammed-fahad07/" },
   ];
   return (
-    <section id="contact" style={styles.section}>
+    <section id="contact" style={{ ...styles.section, padding: isMobile ? "3rem 1.5rem" : styles.section.padding }}>
       <p style={styles.sectionLabel}>Get in touch</p>
       <h2 style={styles.sectionTitle}>Contact</h2>
       <p style={{ ...styles.aboutText, marginBottom: "1.5rem" }}>
